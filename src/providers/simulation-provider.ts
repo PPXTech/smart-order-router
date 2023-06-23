@@ -1,6 +1,6 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
+import { PERMIT2_ADDRESS } from '@intimefinance/universal-router-sdk';
 import { TradeType } from '@uniswap/sdk-core';
-import { PERMIT2_ADDRESS } from '@uniswap/universal-router-sdk';
 import { BigNumber } from 'ethers/lib/ethers';
 
 import { SwapOptions, SwapRoute, SwapType } from '../routers';
@@ -17,7 +17,12 @@ import { ProviderConfig } from './provider';
 import { ArbitrumGasData, OptimismGasData } from './v3/gas-data-provider';
 
 export type SimulationResult = {
-  transaction: { hash: string; gas_used: number; gas: number; error_message: string };
+  transaction: {
+    hash: string;
+    gas_used: number;
+    gas: number;
+    error_message: string;
+  };
   simulation: { state_overrides: Record<string, unknown> };
 };
 

@@ -1,12 +1,16 @@
-import { Protocol } from '@uniswap/router-sdk';
+import { Protocol } from '@intimefinance/router-sdk';
+import { Pair } from '@intimefinance/v2-sdk';
 import { Percent } from '@uniswap/sdk-core';
-import { Pair } from '@uniswap/v2-sdk';
 import { Pool } from '@uniswap/v3-sdk';
 import _ from 'lodash';
 
 import { RouteWithValidQuote } from '../routers/alpha-router';
 import { MixedRoute, V2Route, V3Route } from '../routers/router';
-import { V3_CORE_FACTORY_ADDRESSES } from './addresses';
+
+import {
+  V2_CORE_FACTORY_ADDRESSES,
+  V3_CORE_FACTORY_ADDRESSES,
+} from './addresses';
 
 import { CurrencyAmount } from '.';
 
@@ -35,6 +39,7 @@ export const routeToString = (
             V3_CORE_FACTORY_ADDRESSES[pool.chainId]
           )}]`
         : ` -- [${Pair.getAddress(
+            V2_CORE_FACTORY_ADDRESSES[(pool as Pair).chainId] as string,
             (pool as Pair).token0,
             (pool as Pair).token1
           )}]`

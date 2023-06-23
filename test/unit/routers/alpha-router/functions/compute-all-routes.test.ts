@@ -1,10 +1,12 @@
-import { Pair } from '@uniswap/v2-sdk';
+import { Pair } from '@intimefinance/v2-sdk';
 import { encodeSqrtRatioX96, FeeAmount, Pool } from '@uniswap/v3-sdk';
 import {
+  ChainId,
   CurrencyAmount,
   DAI_MAINNET as DAI,
   USDC_MAINNET as USDC,
   USDT_MAINNET as USDT,
+  V2_CORE_FACTORY_ADDRESSES,
   WBTC_MAINNET as WBTC,
 } from '../../../../../src';
 import {
@@ -23,6 +25,8 @@ import {
   WETH9_USDT_LOW,
   WETH_USDT,
 } from '../../../../test-util/mock-data';
+
+const V2_FACTORY_ADDRESS = V2_CORE_FACTORY_ADDRESSES[ChainId.MAINNET] as string;
 
 describe('compute all v3 routes', () => {
   test('succeeds to compute all routes', async () => {
@@ -90,6 +94,7 @@ describe('compute all v2 routes', () => {
       USDC_DAI,
       WBTC_WETH,
       new Pair(
+        V2_FACTORY_ADDRESS,
         CurrencyAmount.fromRawAmount(USDT, 10),
         CurrencyAmount.fromRawAmount(WBTC, 10)
       ),

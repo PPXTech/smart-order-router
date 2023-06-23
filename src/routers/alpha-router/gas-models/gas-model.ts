@@ -20,6 +20,7 @@ import {
   USDC_ARBITRUM,
   USDC_ARBITRUM_GOERLI,
   USDC_BSC,
+  USDC_CORE_TEST,
   USDC_ETHEREUM_GNOSIS,
   USDC_GÖRLI,
   USDC_KOVAN,
@@ -33,6 +34,7 @@ import {
   USDT_ARBITRUM,
   USDT_ARBITRUM_RINKEBY,
   USDT_BSC,
+  USDT_CORE_TEST,
   USDT_GÖRLI,
   USDT_KOVAN,
   USDT_MAINNET,
@@ -85,6 +87,7 @@ export const usdGasTokensByChain: { [chainId in ChainId]?: Token[] } = {
   [ChainId.GNOSIS]: [USDC_ETHEREUM_GNOSIS],
   [ChainId.MOONBEAM]: [USDC_MOONBEAM],
   [ChainId.BSC]: [USDT_BSC, USDC_BSC, DAI_BSC],
+  [ChainId.CORE_TEST]: [USDT_CORE_TEST, USDC_CORE_TEST],
 };
 
 export type L1ToL2GasCosts = {

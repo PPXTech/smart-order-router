@@ -497,6 +497,23 @@ export const USDT_BSC = new Token(
   'USDT'
 );
 
+// Core test chain Tokens
+export const USDT_CORE_TEST = new Token(
+  ChainId.CORE_TEST,
+  '0x5700aff131756461537420e8f434d9f43ef97c48',
+  6,
+  'USDT',
+  'Tether USD'
+);
+
+export const USDC_CORE_TEST = new Token(
+  ChainId.CORE_TEST,
+  '0x65A8173c48B49a1320cc4513DCD4792e315fE2b1',
+  6,
+  'USDC',
+  'USD Coin'
+);
+
 // Celo Tokens
 export const CELO = new Token(
   ChainId.CELO,
@@ -624,8 +641,7 @@ export class TokenProvider implements ITokenProvider {
   constructor(
     private chainId: ChainId,
     protected multicall2Provider: IMulticallProvider
-  ) {
-  }
+  ) {}
 
   public async getTokens(
     _addresses: string[],
@@ -782,6 +798,8 @@ export const USDT_ON = (chainId: ChainId): Token => {
       return USDT_ARBITRUM_RINKEBY;
     case ChainId.BSC:
       return USDT_BSC;
+    case ChainId.CORE_TEST:
+      return USDT_CORE_TEST;
     default:
       throw new Error(`Chain id: ${chainId} not supported`);
   }
@@ -821,6 +839,8 @@ export const USDC_ON = (chainId: ChainId): Token => {
       return USDC_MOONBEAM;
     case ChainId.BSC:
       return USDC_BSC;
+    case ChainId.CORE_TEST:
+      return USDC_CORE_TEST;
     default:
       throw new Error(`Chain id: ${chainId} not supported`);
   }

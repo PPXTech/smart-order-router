@@ -36,7 +36,6 @@ import {
   SimulationStatus,
   StaticGasPriceProvider,
   SUPPORTED_CHAINS,
-  // SUPPORTED_CHAINS,
   SwapOptions,
   SwapType,
   SWAP_ROUTER_02_ADDRESSES,
@@ -45,13 +44,16 @@ import {
   UNI_GÖRLI,
   UNI_MAINNET,
   USDC_BSC,
+  USDC_CORE_TEST,
   USDC_ETHEREUM_GNOSIS,
   USDC_MAINNET,
   USDC_ON,
   USDT_BSC,
+  USDT_CORE_TEST,
   USDT_MAINNET,
   V2PoolProvider,
   V2Route,
+  V2_CORE_FACTORY_ADDRESSES,
   V2_SUPPORTED,
   V3PoolProvider,
   V3Route,
@@ -65,14 +67,14 @@ import { WHALES } from '../../../test-util/whales';
 import 'jest-environment-hardhat';
 
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
-import { AllowanceTransfer, PermitSingle } from '@uniswap/permit2-sdk';
-import { Protocol } from '@uniswap/router-sdk';
+import { Protocol } from '@intimefinance/router-sdk';
 import {
   PERMIT2_ADDRESS,
   UNIVERSAL_ROUTER_ADDRESS as UNIVERSAL_ROUTER_ADDRESS_BY_CHAIN,
-} from '@uniswap/universal-router-sdk';
-import { Permit2Permit } from '@uniswap/universal-router-sdk/dist/utils/permit2';
-import { Pair } from '@uniswap/v2-sdk';
+} from '@intimefinance/universal-router-sdk';
+import { Permit2Permit } from '@intimefinance/universal-router-sdk/dist/utils/inputTokens';
+import { Pair } from '@intimefinance/v2-sdk';
+import { AllowanceTransfer, PermitSingle } from '@uniswap/permit2-sdk';
 import { encodeSqrtRatioX96, FeeAmount, Pool } from '@uniswap/v3-sdk';
 import bunyan from 'bunyan';
 import { BigNumber, providers, Wallet } from 'ethers';
@@ -85,6 +87,7 @@ import { getBalanceAndApprove } from '../../../test-util/getBalanceAndApprove';
 const FORK_BLOCK = 16075500;
 const UNIVERSAL_ROUTER_ADDRESS = UNIVERSAL_ROUTER_ADDRESS_BY_CHAIN(1);
 const SLIPPAGE = new Percent(15, 100); // 5% or 10_000?
+const V2_FACTORY_ADDRESS = V2_CORE_FACTORY_ADDRESSES[ChainId.MAINNET] as string;
 
 const checkQuoteToken = (
   before: CurrencyAmount<Currency>,
@@ -2441,6 +2444,7 @@ describe('external class tests', () => {
   );
 
   const pair_0_1 = new Pair(
+    V2_FACTORY_ADDRESS,
     CurrencyAmount.fromRawAmount(token0, 100),
     CurrencyAmount.fromRawAmount(token1, 100)
   );
@@ -2535,6 +2539,7 @@ describe('quote for other networks', () => {
     [ChainId.GNOSIS]: WBTC_GNOSIS,
     [ChainId.MOONBEAM]: WBTC_MOONBEAM,
     [ChainId.BSC]: USDC_BSC,
+    [ChainId.CORE_TEST]: USDC_CORE_TEST,
   };
   const TEST_ERC20_2: { [chainId in ChainId]: Token } = {
     [ChainId.MAINNET]: DAI_ON(1),
@@ -2555,6 +2560,7 @@ describe('quote for other networks', () => {
     [ChainId.GNOSIS]: USDC_ETHEREUM_GNOSIS,
     [ChainId.MOONBEAM]: WBTC_MOONBEAM,
     [ChainId.BSC]: USDT_BSC,
+    [ChainId.CORE_TEST]: USDT_CORE_TEST,
   };
 
   // TODO: Find valid pools/tokens on optimistic kovan and polygon mumbai. We skip those tests for now.
@@ -2584,6 +2590,7 @@ describe('quote for other networks', () => {
 
         beforeAll(async () => {
           const chainProvider = ID_TO_PROVIDER(chain);
+          console.log('chainProvider', chainProvider);
           const provider = new JsonRpcProvider(chainProvider, chain);
 
           const multicall2Provider = new UniswapMulticallProvider(

@@ -1,6 +1,5 @@
 import { Currency, Ether, NativeCurrency, Token } from '@uniswap/sdk-core';
 
-
 export enum ChainId {
   MAINNET = 1,
   ROPSTEN = 3,
@@ -20,6 +19,7 @@ export enum ChainId {
   GNOSIS = 100,
   MOONBEAM = 1284,
   BSC = 56,
+  CORE_TEST = 1115,
 }
 
 // WIP: Gnosis, Moonbeam
@@ -40,6 +40,7 @@ export const SUPPORTED_CHAINS: ChainId[] = [
   ChainId.CELO_ALFAJORES,
   ChainId.CELO,
   ChainId.BSC,
+  ChainId.CORE_TEST,
   // Gnosis and Moonbeam don't yet have contracts deployed yet
 ];
 
@@ -49,6 +50,7 @@ export const V2_SUPPORTED = [
   ChainId.GÖRLI,
   ChainId.RINKEBY,
   ChainId.ROPSTEN,
+  ChainId.CORE_TEST,
 ];
 
 export const HAS_L1_FEE = [
@@ -112,6 +114,8 @@ export const ID_TO_CHAIN_ID = (id: number): ChainId => {
       return ChainId.GNOSIS;
     case 1284:
       return ChainId.MOONBEAM;
+    case 1115:
+      return ChainId.CORE_TEST;
     default:
       throw new Error(`Unknown chain id: ${id}`);
   }
@@ -136,8 +140,8 @@ export enum ChainName {
   GNOSIS = 'gnosis-mainnet',
   MOONBEAM = 'moonbeam-mainnet',
   BSC = 'bsc-mainnet',
+  CORE_TEST = 'core-testnet',
 }
-
 
 export enum NativeCurrencyName {
   // Strings match input for CLI
@@ -146,7 +150,8 @@ export enum NativeCurrencyName {
   CELO = 'CELO',
   GNOSIS = 'XDAI',
   MOONBEAM = 'GLMR',
-  BNB = "BNB",
+  BNB = 'BNB',
+  CORE = 'CORE',
 }
 export const NATIVE_NAMES_BY_ID: { [chainId: number]: string[] } = {
   [ChainId.MAINNET]: [
@@ -204,9 +209,7 @@ export const NATIVE_NAMES_BY_ID: { [chainId: number]: string[] } = {
     'ETHER',
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
   ],
-  [ChainId.POLYGON]: [
-    'MATIC', '0x0000000000000000000000000000000000001010'
-  ],
+  [ChainId.POLYGON]: ['MATIC', '0x0000000000000000000000000000000000001010'],
   [ChainId.POLYGON_MUMBAI]: [
     'MATIC',
     '0x0000000000000000000000000000000000001010',
@@ -215,11 +218,8 @@ export const NATIVE_NAMES_BY_ID: { [chainId: number]: string[] } = {
   [ChainId.CELO_ALFAJORES]: ['CELO'],
   [ChainId.GNOSIS]: ['XDAI'],
   [ChainId.MOONBEAM]: ['GLMR'],
-  [ChainId.BSC]: [
-    'BNB',
-    'BNB',
-    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-  ],
+  [ChainId.BSC]: ['BNB', 'BNB', '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'],
+  [ChainId.CORE_TEST]: ['CORE'],
 };
 
 export const NATIVE_CURRENCY: { [chainId: number]: NativeCurrencyName } = {
@@ -241,6 +241,7 @@ export const NATIVE_CURRENCY: { [chainId: number]: NativeCurrencyName } = {
   [ChainId.GNOSIS]: NativeCurrencyName.GNOSIS,
   [ChainId.MOONBEAM]: NativeCurrencyName.MOONBEAM,
   [ChainId.BSC]: NativeCurrencyName.BNB,
+  [ChainId.CORE_TEST]: NativeCurrencyName.CORE,
 };
 
 export const ID_TO_NETWORK_NAME = (id: number): ChainName => {
@@ -281,6 +282,8 @@ export const ID_TO_NETWORK_NAME = (id: number): ChainName => {
       return ChainName.GNOSIS;
     case 1284:
       return ChainName.MOONBEAM;
+    case 1115:
+      return ChainName.CORE_TEST;
     default:
       throw new Error(`Unknown chain id: ${id}`);
   }
@@ -324,6 +327,8 @@ export const ID_TO_PROVIDER = (id: ChainId): string => {
       return process.env.JSON_RPC_PROVIDER_CELO_ALFAJORES!;
     case ChainId.BSC:
       return process.env.JSON_RPC_PROVIDER_BSC!;
+    case ChainId.CORE_TEST:
+      return process.env.JSON_RPC_PROVIDER_CORE_TEST!;
     default:
       throw new Error(`Chain id: ${id} not supported`);
   }
@@ -458,6 +463,13 @@ export const WRAPPED_NATIVE_CURRENCY: { [chainId in ChainId]: Token } = {
     'WGLMR',
     'Wrapped GLMR'
   ),
+  [ChainId.CORE_TEST]: new Token(
+    ChainId.CORE_TEST,
+    '0xeEFc44237354771fEb09Aa0a18A85eD536F15184',
+    18,
+    'WCORE',
+    'Wrapped CORE'
+  ),
 };
 
 function isMatic(
@@ -560,6 +572,30 @@ class BscNativeCurrency extends NativeCurrency {
   }
 }
 
+export function isCore(chainId: number): chainId is ChainId.CORE_TEST {
+  return chainId === ChainId.CORE_TEST;
+}
+
+class CoreNativeCurrency extends NativeCurrency {
+  equals(other: Currency): boolean {
+    return other.isNative && other.chainId === this.chainId;
+  }
+
+  get wrapped(): Token {
+    if (!isCore(this.chainId)) throw new Error('Not core');
+    const nativeCurrency = WRAPPED_NATIVE_CURRENCY[this.chainId];
+    if (nativeCurrency) {
+      return nativeCurrency;
+    }
+    throw new Error(`Does not support this chain ${this.chainId}`);
+  }
+
+  public constructor(chainId: number) {
+    if (!isCore(chainId)) throw new Error('Not core');
+    super(chainId, 18, 'CORE', 'Core');
+  }
+}
+
 function isMoonbeam(chainId: number): chainId is ChainId.MOONBEAM {
   return chainId === ChainId.MOONBEAM;
 }
@@ -616,6 +652,8 @@ export function nativeOnChain(chainId: number): NativeCurrency {
     cachedNativeCurrency[chainId] = new MoonbeamNativeCurrency(chainId);
   else if (isBsc(chainId))
     cachedNativeCurrency[chainId] = new BscNativeCurrency(chainId);
+  else if (isCore(chainId))
+    cachedNativeCurrency[chainId] = new CoreNativeCurrency(chainId);
   else cachedNativeCurrency[chainId] = ExtendedEther.onChain(chainId);
 
   return cachedNativeCurrency[chainId]!;

@@ -33,6 +33,7 @@ import {
   USDC_ARBITRUM_GOERLI,
   USDC_ARBITRUM_RINKEBY,
   USDC_BSC,
+  USDC_CORE_TEST,
   USDC_ETHEREUM_GNOSIS,
   USDC_MAINNET,
   USDC_MOONBEAM,
@@ -43,6 +44,7 @@ import {
   USDT_ARBITRUM,
   USDT_ARBITRUM_RINKEBY,
   USDT_BSC,
+  USDT_CORE_TEST,
   USDT_MAINNET,
   USDT_OPTIMISM,
   USDT_OPTIMISM_GOERLI,
@@ -155,7 +157,11 @@ export const CACHE_SEED_TOKENS: {
     BTC: BTC_BSC,
     WBNB: WRAPPED_NATIVE_CURRENCY[ChainId.BSC],
   },
-
+  [ChainId.CORE_TEST]: {
+    USDC: USDC_CORE_TEST,
+    USDT: USDT_CORE_TEST,
+    WCORE: WRAPPED_NATIVE_CURRENCY[ChainId.CORE_TEST],
+  },
   // Currently we do not have providers for Moonbeam mainnet or Gnosis testnet
 };
 

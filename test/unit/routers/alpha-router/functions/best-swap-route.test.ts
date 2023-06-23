@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
+import { Pair } from '@intimefinance/v2-sdk';
 import { Fraction, TradeType } from '@uniswap/sdk-core';
-import { Pair } from '@uniswap/v2-sdk';
 import { Pool } from '@uniswap/v3-sdk';
 import JSBI from 'jsbi';
 import _ from 'lodash';
@@ -14,6 +14,7 @@ import {
   USDC_MAINNET as USDC,
   V2Route,
   V2RouteWithValidQuote,
+  V2_CORE_FACTORY_ADDRESSES,
   V3PoolProvider,
   V3Route,
   V3RouteWithValidQuote,
@@ -41,6 +42,7 @@ import {
   WETH_USDT,
 } from '../../../../test-util/mock-data';
 
+const V2_FACTORY_ADDRESS = V2_CORE_FACTORY_ADDRESSES[ChainId.MAINNET] as string;
 const v3Route1 = new V3Route(
   [USDC_DAI_LOW, DAI_USDT_LOW, WETH9_USDT_LOW],
   USDC,
@@ -132,7 +134,7 @@ describe('get best swap route', () => {
     mockV2PoolProvider = sinon.createStubInstance(V2PoolProvider);
     mockV2PoolProvider.getPools.resolves(buildMockV2PoolAccessor(v2MockPools));
     mockV2PoolProvider.getPoolAddress.callsFake((tA, tB) => ({
-      poolAddress: Pair.getAddress(tA, tB),
+      poolAddress: Pair.getAddress(V2_FACTORY_ADDRESS, tA, tB),
       token0: tA,
       token1: tB,
     }));

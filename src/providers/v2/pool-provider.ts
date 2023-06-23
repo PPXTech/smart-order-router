@@ -1,11 +1,12 @@
 import { BigNumber } from '@ethersproject/bignumber';
+import { Pair } from '@intimefinance/v2-sdk';
 import { Token } from '@uniswap/sdk-core';
-import { Pair } from '@uniswap/v2-sdk';
 import retry, { Options as RetryOptions } from 'async-retry';
 import _ from 'lodash';
 
 import { IUniswapV2Pair__factory } from '../../types/v2/factories/IUniswapV2Pair__factory';
 import { ChainId, CurrencyAmount } from '../../util';
+import { V2_CORE_FACTORY_ADDRESSES } from '../../util/addresses';
 import { log } from '../../util/log';
 import { poolToString } from '../../util/routes';
 import { IMulticallProvider, Result } from '../multicall-provider';
@@ -139,6 +140,7 @@ export class V2PoolProvider implements IV2PoolProvider {
       const { reserve0, reserve1 } = reservesResult.result;
 
       const pool = new Pair(
+        V2_CORE_FACTORY_ADDRESSES[this.chainId] as string,
         CurrencyAmount.fromRawAmount(token0, reserve0.toString()),
         CurrencyAmount.fromRawAmount(token1, reserve1.toString())
       );
@@ -191,7 +193,11 @@ export class V2PoolProvider implements IV2PoolProvider {
       return { poolAddress: cachedAddress, token0, token1 };
     }
 
-    const poolAddress = Pair.getAddress(token0, token1);
+    const poolAddress = Pair.getAddress(
+      V2_CORE_FACTORY_ADDRESSES[this.chainId] as string,
+      token0,
+      token1
+    );
 
     this.POOL_ADDRESS_CACHE[cacheKey] = poolAddress;
 

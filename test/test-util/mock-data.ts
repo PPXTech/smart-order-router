@@ -1,7 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber';
+import { Pair } from '@intimefinance/v2-sdk';
 import { Token } from '@uniswap/sdk-core';
 import { TokenList } from '@uniswap/token-lists';
-import { Pair } from '@uniswap/v2-sdk';
 import { encodeSqrtRatioX96, FeeAmount, Pool } from '@uniswap/v3-sdk';
 import _ from 'lodash';
 import {
@@ -13,12 +13,15 @@ import {
   USDC_MAINNET as USDC,
   USDT_MAINNET as USDT,
   V2SubgraphPool,
+  V2_CORE_FACTORY_ADDRESSES,
   V3PoolAccessor,
   V3SubgraphPool,
   WBTC_MAINNET as WBTC,
   WRAPPED_NATIVE_CURRENCY,
 } from '../../src';
 import { V2PoolAccessor } from '../../src/providers/v2/pool-provider';
+
+const V2_FACTORY_ADDRESS = V2_CORE_FACTORY_ADDRESSES[ChainId.MAINNET] as string;
 
 export const mockBlock = 123456789;
 export const mockGasPriceWeiBN = BigNumber.from(100000);
@@ -153,26 +156,31 @@ export const WBTC_WETH_MEDIUM = new Pool(
 
 // Mock V2 Pools
 export const DAI_USDT = new Pair(
+  V2_FACTORY_ADDRESS,
   CurrencyAmount.fromRawAmount(DAI, 10000000000),
   CurrencyAmount.fromRawAmount(USDT, 10000000000)
 );
 
 export const USDC_WETH = new Pair(
+  V2_FACTORY_ADDRESS,
   CurrencyAmount.fromRawAmount(USDC, 10000000000),
   CurrencyAmount.fromRawAmount(WRAPPED_NATIVE_CURRENCY[1]!, 10000000000)
 );
 
 export const WETH_USDT = new Pair(
+  V2_FACTORY_ADDRESS,
   CurrencyAmount.fromRawAmount(USDT, 10000000000),
   CurrencyAmount.fromRawAmount(WRAPPED_NATIVE_CURRENCY[1]!, 10000000000)
 );
 
 export const USDC_DAI = new Pair(
+  V2_FACTORY_ADDRESS,
   CurrencyAmount.fromRawAmount(USDC, 10000000000),
   CurrencyAmount.fromRawAmount(DAI, 10000000000)
 );
 
 export const WBTC_WETH = new Pair(
+  V2_FACTORY_ADDRESS,
   CurrencyAmount.fromRawAmount(WBTC, 10000000000),
   CurrencyAmount.fromRawAmount(WRAPPED_NATIVE_CURRENCY[1]!, 10000000000)
 );
@@ -245,14 +253,18 @@ export const buildMockV2PoolAccessor: (pools: Pair[]) => V2PoolAccessor = (
       _.find(
         pools,
         (p) =>
-          Pair.getAddress(p.token0, p.token1).toLowerCase() ==
-          address.toLowerCase()
+          Pair.getAddress(
+            V2_FACTORY_ADDRESS,
+            p.token0,
+            p.token1
+          ).toLowerCase() == address.toLowerCase()
       ),
     getPool: (tokenA, tokenB) =>
       _.find(
         pools,
         (p) =>
-          Pair.getAddress(p.token0, p.token1) == Pair.getAddress(tokenA, tokenB)
+          Pair.getAddress(V2_FACTORY_ADDRESS, p.token0, p.token1) ==
+          Pair.getAddress(V2_FACTORY_ADDRESS, tokenA, tokenB)
       ),
   };
 };

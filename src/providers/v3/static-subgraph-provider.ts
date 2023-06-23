@@ -39,6 +39,7 @@ import {
   USDC_ARBITRUM,
   USDC_ARBITRUM_GOERLI,
   USDC_BSC,
+  USDC_CORE_TEST,
   USDC_ETHEREUM_GNOSIS,
   USDC_GÖRLI,
   USDC_KOVAN,
@@ -53,6 +54,7 @@ import {
   USDT_ARBITRUM,
   USDT_ARBITRUM_RINKEBY,
   USDT_BSC,
+  USDT_CORE_TEST,
   USDT_GÖRLI,
   USDT_KOVAN,
   USDT_MAINNET,
@@ -192,6 +194,11 @@ const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     USDC_MOONBEAM,
     WBTC_MOONBEAM,
   ],
+  [ChainId.CORE_TEST]: [
+    WRAPPED_NATIVE_CURRENCY[ChainId.CORE_TEST],
+    USDC_CORE_TEST,
+    USDT_CORE_TEST,
+  ],
 };
 
 /**
@@ -209,8 +216,7 @@ export class StaticV3SubgraphProvider implements IV3SubgraphProvider {
   constructor(
     private chainId: ChainId,
     private poolProvider: IV3PoolProvider
-  ) {
-  }
+  ) {}
 
   public async getPools(
     tokenIn?: Token,

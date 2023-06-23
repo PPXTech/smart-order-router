@@ -1,14 +1,17 @@
+import { Pair } from '@intimefinance/v2-sdk';
 import { Token } from '@uniswap/sdk-core';
-import { Pair } from '@uniswap/v2-sdk';
 import _ from 'lodash';
 
+import { V2_CORE_FACTORY_ADDRESSES } from '../../util/addresses';
 import { ChainId, WRAPPED_NATIVE_CURRENCY } from '../../util/chains';
 import { log } from '../../util/log';
 import {
   DAI_MAINNET,
   DAI_RINKEBY_1,
   DAI_RINKEBY_2,
+  USDC_CORE_TEST,
   USDC_MAINNET,
+  USDT_CORE_TEST,
   USDT_MAINNET,
   WBTC_MAINNET,
 } from '../token-provider';
@@ -49,6 +52,11 @@ const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   [ChainId.GNOSIS]: [],
   [ChainId.MOONBEAM]: [],
   [ChainId.BSC]: [],
+  [ChainId.CORE_TEST]: [
+    WRAPPED_NATIVE_CURRENCY[ChainId.CORE_TEST],
+    USDC_CORE_TEST,
+    USDT_CORE_TEST,
+  ],
 };
 
 /**
@@ -100,7 +108,11 @@ export class StaticV2SubgraphProvider implements IV2SubgraphProvider {
 
     const subgraphPools: V2SubgraphPool[] = _(pairs)
       .map(([tokenA, tokenB]) => {
-        const poolAddress = Pair.getAddress(tokenA, tokenB);
+        const poolAddress = Pair.getAddress(
+          V2_CORE_FACTORY_ADDRESSES[this.chainId] as string,
+          tokenA,
+          tokenB
+        );
 
         if (poolAddressSet.has(poolAddress)) {
           return undefined;

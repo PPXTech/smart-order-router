@@ -1,6 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import axios from 'axios';
-import { mocked } from 'ts-jest/utils';
+import { mocked } from 'jest-mock';
+
 import { ETHGasStationInfoProvider } from '../../../src/providers/eth-gas-station-info-gas-price-provider';
 
 jest.mock('axios');
